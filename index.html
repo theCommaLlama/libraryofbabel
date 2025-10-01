@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Library of Babel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-deep: #03040d;
+            --bg-dusk: #101a34;
+            --bg-veil: rgba(10, 21, 43, 0.75);
+            --ink: #f4f1e9;
+            --ink-soft: rgba(244, 241, 233, 0.72);
+            --ink-dim: rgba(244, 241, 233, 0.45);
+            --accent-gold: #f6c86e;
+            --accent-ember: #ff6f61;
+            --accent-cyan: #69e3ff;
+            --accent-violet: #8262ff;
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow-strong: 0 40px 140px rgba(2, 6, 19, 0.85);
+            --shadow-soft: 0 24px 60px rgba(4, 9, 27, 0.65);
+            --panel-blur: blur(26px);
+            --transition: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        body {
+            font-family: 'Spectral', 'Georgia', serif;
+            background: radial-gradient(circle at 50% 18%, rgba(45, 74, 138, 0.58) 0%, rgba(18, 32, 66, 0.92) 42%, var(--bg-deep) 82%);
+            color: var(--ink);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 0;
+        }
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            inset: -25%;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::before {
+            background: radial-gradient(circle, rgba(130, 98, 255, 0.18) 0%, rgba(4, 9, 27, 0) 60%);
+            filter: blur(80px);
+            animation: slowPulse 16s ease-in-out infinite alternate;
+        }
+        body::after {
+            background: radial-gradient(circle, rgba(246, 200, 110, 0.12) 0%, rgba(3, 4, 13, 0) 55%);
+            filter: blur(120px);
+            animation: slowPulse 22s ease-in-out infinite alternate-reverse;
+        }
+        .background-layers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+
+        }
+        .background-layers::before {
+            content: '';
+            position: absolute;
+            inset: -35%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, rgba(4, 10, 30, 0.02) 50%, rgba(4, 10, 30, 0.4) 100%);
+            filter: blur(40px);
+            opacity: 0.35;
+        }
+        .aurora {
+            position: absolute;
+            top: -40%;
+            left: -40%;
+            width: 180%;
+            height: 180%;
+            filter: blur(90px);
+            opacity: 0.28;
+            mix-blend-mode: screen;
+            animation: auroraDrift 32s ease-in-out infinite;
+        }
+        .aurora-1 {
+            background: conic-gradient(from 120deg, rgba(246, 200, 110, 0.18), rgba(130, 98, 255, 0.18), rgba(105, 227, 255, 0.2), transparent 340deg);
+            animation-delay: 0s;
+        }
+        .aurora-2 {
+            background: conic-gradient(from -40deg, rgba(255, 111, 97, 0.22), rgba(105, 227, 255, 0.16), transparent 320deg);
+            animation-duration: 42s;
+            animation-delay: 6s;
+        }
+        .hex-grid {
+            position: absolute;
+            top: -25%;
+            left: -25%;
+            width: 150%;
+            height: 150%;
+            opacity: 0.25;
+            background-image:
+                radial-gradient(circle at center, rgba(250, 214, 144, 0.12) 0%, rgba(3, 4, 13, 0) 55%),
+                repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.04) 0, rgba(255, 255, 255, 0.04) 1px, transparent 1px, transparent 60px),
+                repeating-linear-gradient(-60deg, rgba(130, 98, 255, 0.06) 0, rgba(130, 98, 255, 0.06) 1px, transparent 1px, transparent 60px),
+                repeating-linear-gradient(0deg, rgba(105, 227, 255, 0.04) 0, rgba(105, 227, 255, 0.04) 1px, transparent 1px, transparent 60px);
+            mix-blend-mode: screen;
+            animation: rotateGrid 120s linear infinite;
+        }
+        .floating-glyph {
+            position: absolute;
+            font-family: 'Spectral', serif;
+            font-size: clamp(42px, 6vw, 92px);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(246, 200, 110, 0.18);
+            pointer-events: none;
+            animation: float 18s ease-in-out infinite alternate;
+            filter: blur(0.6px);
+        }
+        .glyph-1 {
+            top: 14%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+        .glyph-2 {
+            bottom: 18%;
+            right: 12%;
+            color: rgba(105, 227, 255, 0.2);
+            animation-delay: 4s;
+        }
+        .glyph-3 {
+            top: 46%;
+            right: 28%;
+            color: rgba(130, 98, 255, 0.18);
+            letter-spacing: 0.6em;
+            animation-delay: 8s;
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3.8s ease-in-out infinite;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 6;
+            padding: 46px 5vw 26px;
+            background: linear-gradient(180deg, rgba(5, 11, 25, 0.88) 0%, rgba(5, 11, 25, 0.54) 60%, rgba(5, 11, 25, 0.18) 100%);
+            backdrop-filter: blur(32px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            max-height: 240px;
+            transition: padding 0.55s var(--transition), background 0.55s ease, box-shadow 0.55s ease, border-bottom 0.55s ease, max-height 0.55s var(--transition);
+
+        }
+        header .nav-bar,
+        header .nav-bar * {
+            cursor: auto;
+        }
+        header.shrunken {
+            padding: 6px 5vw 10px;
+            background: linear-gradient(180deg, rgba(5, 11, 25, 0.99) 0%, rgba(5, 11, 25, 0.95) 58%, rgba(5, 11, 25, 0.82) 100%);
+            box-shadow: 0 26px 90px rgba(2, 6, 19, 0.78);
+            max-height: 100px;
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto 28px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            position: relative;
+            transition: margin 0.4s var(--transition), gap 0.4s var(--transition);
+        }
+        header.shrunken .header-inner {
+            margin-bottom: 0;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+        }
+        .header-inner::after {
+            content: '';
+            position: absolute;
+            inset: -22%;
+            background: radial-gradient(circle at 40% 60%, rgba(246, 200, 110, 0.14), rgba(130, 98, 255, 0.08), transparent 70%);
+            filter: blur(40px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .header-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 4px;
+            position: relative;
+            z-index: 1;
+            transition: gap 0.35s var(--transition);
+            align-items: flex-start;
+        }
+        header.shrunken .header-title-block {
+            gap: 0;
+        }
+        .library-title {
+            font-size: clamp(2.6rem, 4vw, 4.2rem);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            background: linear-gradient(120deg, rgba(246, 200, 110, 0.95), rgba(255, 183, 120, 0.95), rgba(130, 98, 255, 0.92));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 32px rgba(246, 200, 110, 0.25);
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            transform-origin: left center;
+            transition: transform 0.45s var(--transition), letter-spacing 0.45s var(--transition), text-shadow 0.45s ease, font-size 0.45s var(--transition);
+            line-height: 1.05;
+        }
+        header.shrunken .library-title {
+            transform: none;
+            font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px rgba(246, 200, 110, 0.5);
+            line-height: 1;
+        }
+        .library-subtitle {
+            max-width: 620px;
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(1rem, 1.4vw, 1.15rem);
+            letter-spacing: 0.05em;
+            color: var(--ink-soft);
+            line-height: 1.8;
+            text-transform: uppercase;
+            transition: opacity 0.4s var(--transition), transform 0.4s var(--transition), max-height 0.4s var(--transition);
+        }
+        header.shrunken .library-subtitle {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+            pointer-events: none;
+        }
+        .header-location {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(239, 242, 250, 0.78);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.35s var(--transition), transform 0.35s var(--transition), letter-spacing 0.35s var(--transition), font-size 0.35s var(--transition);
+            max-width: 640px;
+            text-align: right;
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        header.shrunken .header-location {
+            opacity: 1;
+            transform: translateY(0);
+            text-align: left;
+            letter-spacing: 0.16em;
+            font-size: 0.68rem;
+            line-height: 1.15;
+            padding-top: 4px;
+        }
+        .nav-bar {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(9, 18, 41, 0.9), rgba(8, 22, 49, 0.65));
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: var(--panel-blur);
+            max-height: 320px;
+            transition: padding 0.35s var(--transition), max-height 0.35s var(--transition), opacity 0.3s ease, visibility 0s linear 0s;
+            visibility: visible;
+        }
+        header.shrunken .nav-bar {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+            pointer-events: none;
+
+            border-color: rgba(255, 255, 255, 0);
+            box-shadow: none;
+            margin-top: 0;
+            visibility: hidden;
+            transition: padding 0.35s var(--transition), max-height 0.35s var(--transition), opacity 0.3s ease, visibility 0s linear 0.35s;
+        }
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-section label {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--ink-dim);
+        }
+        .nav-section input[type="text"],
+        .nav-section input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            color: var(--ink);
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+            backdrop-filter: var(--panel-blur);
+        }
+        .nav-section input[type="text"] {
+            min-width: 160px;
+        }
+        .nav-section input[type="number"]::-webkit-outer-spin-button,
+        .nav-section input[type="number"]::-webkit-inner-spin-button {
+            appearance: none;
+            margin: 0;
+        }
+        .nav-section input[type="number"] {
+            appearance: textfield;
+        }
+        .nav-section input:focus {
+            outline: none;
+            border-color: rgba(246, 200, 110, 0.85);
+            box-shadow: 0 0 0 4px rgba(246, 200, 110, 0.16);
+            transform: translateY(-1px);
+        }
+        .nav-bar button {
+            width: 100%;
+        }
+        button {
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(246, 200, 110, 0.9), rgba(255, 111, 97, 0.92));
+            color: #091229;
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.35s var(--transition), box-shadow 0.35s var(--transition), background 0.35s ease;
+            box-shadow: 0 14px 34px rgba(255, 162, 120, 0.28);
+            backdrop-filter: var(--panel-blur);
+        }
+        button:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 24px 52px rgba(255, 151, 107, 0.35);
+        }
+        button:active {
+            transform: translateY(0) scale(0.98);
+        }
+        button.secondary {
+            background: linear-gradient(135deg, rgba(32, 55, 102, 0.88), rgba(18, 32, 73, 0.92));
+            color: var(--ink);
+            box-shadow: 0 16px 36px rgba(24, 42, 88, 0.35);
+        }
+        button.random-btn {
+            background: linear-gradient(135deg, rgba(130, 98, 255, 0.96), rgba(105, 227, 255, 0.92));
+            color: #050b1a;
+            box-shadow: 0 18px 40px rgba(109, 184, 255, 0.35);
+        }
+        .main-content {
+            max-width: 1500px;
+            margin: 48px auto 0;
+            padding: 0 5vw 88px;
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+            gap: 48px;
+            align-items: start;
+            position: relative;
+            z-index: 5;
+            flex: 1 0 auto;
+        }
+        .left-panel {
+            min-width: 0;
+            perspective: 1400px;
+        }
+        .page-display {
+            background: linear-gradient(130deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 240, 223, 0.94) 40%, rgba(239, 229, 205, 0.92) 100%);
+            color: #1b263b;
+            border-radius: 30px;
+            padding: 38px 48px 38px;
+            box-shadow: var(--shadow-strong);
+            position: relative;
+
+            border: 1px solid rgba(26, 44, 80, 0.12);
+            animation: pageFlip 0.7s ease-out;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transition: transform 1.2s var(--transition), box-shadow 0.6s ease;
+        }
+        .page-display:hover {
+            transform: rotateX(5deg) rotateY(-3deg) translateY(-6px);
+            box-shadow: 0 55px 160px rgba(4, 12, 34, 0.58);
+        }
+        .page-display::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(215, 192, 128, 0.18), transparent 18%, transparent 82%, rgba(215, 192, 128, 0.18));
+            opacity: 0.7;
+        }
+        .page-display::after {
+            content: '';
+            position: absolute;
+            inset: 3% 3% 2.5%;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+        .nav-page-btn {
+            position: absolute;
+            top: 32px;
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(24, 43, 78, 0.28);
+            background: rgba(240, 234, 216, 0.92);
+            box-shadow: 0 14px 32px rgba(35, 49, 83, 0.28);
+            color: #1d273e;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.35s var(--transition), box-shadow 0.35s var(--transition), background 0.35s ease;
+            z-index: 4;
+        }
+        .nav-page-btn.nav-prev {
+            left: 28px;
+        }
+        .nav-page-btn.nav-next {
+            right: 28px;
+        }
+        .nav-page-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(135deg, rgba(246, 200, 110, 0.92), rgba(255, 160, 120, 0.94));
+            box-shadow: 0 22px 48px rgba(60, 80, 120, 0.35);
+        }
+        .nav-page-btn:active {
+            transform: scale(0.95);
+        }
+        .nav-page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background: rgba(235, 230, 220, 0.72);
+            box-shadow: none;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(35, 54, 88, 0.18);
+            flex: 0 0 auto;
+        }
+        .page-header h3 {
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #16243d;
+        }
+        .location-info {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            color: rgba(21, 35, 62, 0.75);
+            line-height: 1.8;
+        }
+        .page-content {
+            font-family: 'Source Sans 3', 'IBM Plex Mono', 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.4;
+            color: #1d273c;
+            letter-spacing: 0.6px;
+            text-align: justify;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            width: 100%;
+            flex: 1 1 auto;
+            scroll-behavior: smooth;
+            scrollbar-width: auto;
+            scrollbar-color: rgba(246, 200, 110, 0.96) rgba(40, 20, 10, 0.28);
+            scrollbar-gutter: stable both-edges;
+            pointer-events: auto;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            position: relative;
+            z-index: 1;
+        }
+        .page-content::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 1px;
+        }
+        }
+        .page-content::-webkit-scrollbar {
+            width: 14px;
+            background-color: rgba(40, 20, 10, 0.35);
+        }
+        .page-content::-webkit-scrollbar-track {
+            background: rgba(40, 20, 10, 0.35);
+            border-radius: 12px;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(246, 200, 110, 0.96), rgba(255, 111, 97, 0.94));
+            border-radius: 12px;
+            border: 3px solid rgba(40, 20, 10, 0.35);
+        }
+        .page-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(246, 200, 110, 1), rgba(255, 111, 97, 0.98));
+        }
+        .highlight {
+            background: linear-gradient(120deg, rgba(246, 200, 110, 0.95), rgba(255, 140, 102, 0.95));
+            color: #0b1328;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(246, 200, 110, 0.35);
+            }
+            .right-panel {
+            position: sticky;
+            top: 0px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .search-panel {
+            background: linear-gradient(140deg, rgba(11, 22, 49, 0.88), rgba(7, 15, 34, 0.78));
+            border-radius: 28px;
+            border: 1px solid var(--glass-border);
+            padding: 28px 26px 32px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(24px);
+        }
+        .search-controls {
+            display: flex;
+                flex-direction: column;
+            gap: 22px;
+        }
+        .search-input-section textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            color: var(--ink);
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            line-height: 1.8;
+            resize: vertical;
+            transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+            backdrop-filter: var(--panel-blur);
+        }
+        .search-input-section textarea:focus {
+            outline: none;
+            border-color: rgba(105, 227, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(105, 227, 255, 0.16);
+            transform: translateY(-1px);
+        }
+        .search-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .search-modes label {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: transform 0.35s ease, border-color 0.35s ease;
+        }
+        .search-modes label:hover {
+            transform: translateY(-2px);
+            border-color: rgba(105, 227, 255, 0.25);
+        }
+        .search-modes input[type="radio"] {
+            cursor: pointer;
+            accent-color: rgba(105, 227, 255, 0.6);
+        }
+        #searchResults {
+
+            background: linear-gradient(140deg, rgba(11, 21, 42, 0.85), rgba(8, 17, 36, 0.7));
+            border-radius: 22px;
+            border: 1px solid var(--glass-border);
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(20px);
+        }
+        #searchResults.compact {
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 18px 42px rgba(7, 15, 34, 0.46);
+        }
+        .search-results-container {
+            padding: 4px;
+            
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 4px;
+            padding-right: 4px;
+        }
+        #searchResults.compact .search-results-container {
+            
+        }
+        .search-results-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .search-results-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(130, 98, 255, 0.65), rgba(105, 227, 255, 0.55));
+            border-radius: 10px;
+        }
+        .result-item {
+            position: relative;
+            padding: 18px 20px 18px 22px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: transform 0.35s var(--transition), box-shadow 0.35s var(--transition), border-color 0.35s ease;
+
+        }
+        .result-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(246, 200, 110, 0.12), rgba(105, 227, 255, 0.08));
+            opacity: 0;
+            border-radius: 18px;
+            transition: opacity 0.35s ease;
+        }
+        .result-item:hover {
+            transform: translateY(-2px) scale(1.01);
+            border-color: rgba(246, 200, 110, 0.5);
+            box-shadow: 0 12px 24px rgba(8, 14, 32, 0.4);
+        }
+        .result-item:hover::after {
+            opacity: 1;
+        }
+        .result-number {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(246, 200, 110, 0.9);
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .result-location {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.1em;
+            color: rgba(211, 216, 226, 0.75);
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+        .result-preview {
+            margin-top: 10px;
+            font-family: 'Source Sans 3', 'IBM Plex Mono', 'Courier New', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            color: rgba(239, 242, 250, 0.78);
+            opacity: 0.86;
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+            position: relative;
+            z-index: 1;
+        }
+        .load-more-btn {
+            width: 100%;
+            margin-top: 14px;
+            background: linear-gradient(135deg, rgba(23, 38, 76, 0.92), rgba(13, 24, 54, 0.92));
+            color: var(--ink);
+            box-shadow: 0 16px 34px rgba(10, 18, 40, 0.45);
+        }
+        footer {
+            max-width: 1280px;
+            margin: 72px auto 0;
+            padding: 42px 5vw 48px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--ink-dim);
+            font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.24);
+            border-radius: 50%;
+            border-top-color: rgba(105, 227, 255, 0.9);
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes pageFlip {
+            from {
+                opacity: 0;
+                transform: rotateY(-18deg) translateY(26px);
+            }
+            to {
+                opacity: 1;
+                transform: rotateY(0deg) translateY(0);
+            }
+        }
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.25;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.95;
+                transform: scale(1.4);
+            }
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes auroraDrift {
+            0% {
+                transform: rotate(0deg) scale(1.05);
+            }
+            50% {
+                transform: rotate(25deg) scale(1.12);
+            }
+            100% {
+                transform: rotate(0deg) scale(1.05);
+            }
+        }
+        @keyframes slowPulse {
+            0% {
+                transform: scale(1) translate3d(0, 0, 0);
+                opacity: 0.75;
+            }
+            50% {
+                transform: scale(1.05) translate3d(-2%, 1%, 0);
+                opacity: 0.95;
+            }
+            100% {
+                transform: scale(1) translate3d(0, 0, 0);
+                opacity: 0.75;
+            }
+        }
+        @keyframes rotateGrid {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.04);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+        @keyframes float {
+            0% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate3d(12px, -24px, 0) rotate(4deg);
+            }
+            100% {
+                transform: translate3d(-8px, 12px, 0) rotate(-3deg);
+            }
+        }
+        @media (max-width: 1200px) {
+            .header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .right-panel {
+                position: static;
+            }
+            .page-display {
+                min-height: auto;
+            }
+        }
+        @media (max-width: 860px) {
+            header {
+                padding: 36px 6vw 22px;
+            }
+            .nav-bar {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 0 6vw;
+            }
+            .page-display {
+                padding: 64px 40px 48px;
+            }
+            .nav-page-btn {
+                top: 26px;
+            }
+        }
+        @media (max-width: 540px) {
+            .library-title {
+                letter-spacing: 0.1em;
+            }
+            .page-display {
+                padding: 56px 28px 40px;
+            }
+        .page-content.is-scrollable {
+            max-height: none;
+        }
+            .search-modes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-layers">
+        <div class="aurora aurora-1"></div>
+        <div class="aurora aurora-2"></div>
+        <div class="hex-grid"></div>
+        <div class="floating-glyph glyph-1">INFINITE</div>
+        <div class="floating-glyph glyph-2">LIBRARY</div>
+        <div class="floating-glyph glyph-3">BABEL</div>
+    </div>
+    <div class="stars" id="stars"></div>
+    <header class="shrunken">
+        <div class="header-inner">
+            <div class="header-title-block">
+                <h1 class="library-title">The Library of Babel</h1>
+                <p class="library-subtitle">Traverse the endless tessellation of hexagons and uncover the words that define every possible universe.</p>
+                <div class="header-location" id="headerLocation"></div>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-section">
+                <label for="hexagon">Hexagon:</label>
+                <input type="text" id="hexagon" placeholder="abc123xyz...">
+            </div>
+            <div class="nav-section">
+                <label for="wall">Wall:</label>
+                <input type="number" id="wall" min="1" max="4" value="1">
+            </div>
+            <div class="nav-section">
+                <label for="shelf">Shelf:</label>
+                <input type="number" id="shelf" min="1" max="5" value="1">
+            </div>
+            <div class="nav-section">
+                <label for="volume">Vol:</label>
+                <input type="number" id="volume" min="1" max="32" value="1">
+            </div>
+            <div class="nav-section">
+                <label for="page">Page:</label>
+                <input type="number" id="page" min="1" max="410" value="1">
+            </div>
+            <button onclick="goToLocation()">Go</button>
+            <button class="secondary" onclick="browsePage()">Browse</button>
+            <button class="random-btn" onclick="randomPage()">Random</button>
+        </div>
+    </header>
+    <div class="main-content">
+        <div class="left-panel">
+            <div class="page-display" id="pageDisplay">
+                <button class="nav-page-btn nav-prev" onclick="previousPage()" id="prevPageBtn" title="Previous Page">←</button>
+                <button class="nav-page-btn nav-next" onclick="nextPage()" id="nextPageBtn" title="Next Page">→</button>
+                <div class="page-header">
+                    <h3>Welcome To The Infinite</h3>
+                    <div class="location-info">
+                        Navigate to a location or search for any text to begin your journey through infinite knowledge.
+                    </div>
+                </div>
+                <div class="page-content" id="pageContent">The Library of Babel contains every possible combination of characters. Within these walls exist all books that have been written and all books that ever could be written. Every coherent thought, every fragment of truth, every piece of nonsense—all exist somewhere in these infinite hexagons. Your name is here. The story of your life, in perfect detail, occupies a volume on some shelf. The cure for every disease, the answer to every question, the solution to every problem—all waiting to be discovered. But beware: for every truth, there are countless lies. For every masterpiece, infinite gibberish. The Library contains everything, and therefore, in a sense, contains nothing of particular value. Begin your search...</div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="search-panel">
+                <div class="search-controls">
+                    <div class="search-input-section">
+                        <textarea id="searchText" placeholder="Search for any text in the Library..."></textarea>
+                    </div>
+                    <div class="search-modes">
+                        <label><input type="radio" name="searchMode" value="exact" checked> Exact Match</label>
+                        <label><input type="radio" name="searchMode" value="random"> Random Characters</label>
+                        <label><input type="radio" name="searchMode" value="english"> English Words</label>
+                        <label><input type="radio" name="searchMode" value="title"> Title Search</label>
+                    </div>
+                    <button onclick="searchLibrary()">Search</button>
+                </div>
+            </div>
+        <div id="searchResults" class="compact"></div>
+        </div>
+    </div>
+    <script>
+        // Character set used in the Library
+        const CHARSET = ' abcdefghijklmnopqrstuvwxyz,.';
+        const CHARS_PER_PAGE = 3200;
+        const PAGES_PER_VOLUME = 410;
+        const VOLUMES_PER_SHELF = 32;
+        const SHELVES_PER_WALL = 5;
+        const WALLS_PER_HEXAGON = 4;
+        // Seeded pseudo-random number generator (Mulberry32)
+        function createSeededRandom(seed) {
+            return function() {
+                let t = seed += 0x6D2B79F5;
+                t = Math.imul(t ^ t >>> 15, t | 1);
+                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            }
+        }
+        // Hash string to number for seeding
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return Math.abs(hash);
+        }
+        // Generate seed from location coordinates
+        function locationToSeed(hexagon, wall, shelf, volume, page) {
+            const locationString = `${hexagon}:${wall}:${shelf}:${volume}:${page}`;
+            return hashString(locationString);
+        }
+        // Custom page storage (defined early for use in generatePage)
+        const customPages = {};
+        function storeCustomPage(hexagon, wall, shelf, volume, page, content) {
+            const key = `${hexagon}:${wall}:${shelf}:${volume}:${page}`;
+            customPages[key] = content;
+        }
+        function getCustomPage(hexagon, wall, shelf, volume, page) {
+            const key = `${hexagon}:${wall}:${shelf}:${volume}:${page}`;
+            return customPages[key];
+        }
+        // Generate a page of text based on location
+        function generatePage(hexagon, wall, shelf, volume, page) {
+            // Check if this is a custom page (e.g., from search results)
+            const customContent = getCustomPage(hexagon, wall, shelf, volume, page);
+            if (customContent) {
+                return customContent;
+            }
+            const seed = locationToSeed(hexagon, wall, shelf, volume, page);
+            const random = createSeededRandom(seed);
+            let content = '';
+            for (let i = 0; i < CHARS_PER_PAGE; i++) {
+                const charIndex = Math.floor(random() * CHARSET.length);
+                content += CHARSET[charIndex];
+            }
+            return content;
+        }
+        // Format page content and apply highlighting
+        function formatPageContent(content, highlight = null) {
+            // First escape HTML entities
+            let formatted = escapeHTML(content);
+            // Apply highlight if provided
+            if (highlight) {
+                const searchText = escapeHTML(highlight.toLowerCase());
+                const regex = new RegExp(escapeRegex(searchText), 'gi');
+                formatted = formatted.replace(regex, (match) => `<span class="highlight">${match}</span>`);
+            }
+            return formatted;
+        }
+        // Escape HTML entities
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        // Escape regex special characters
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        // Display a page
+        function displayPage(hexagon, wall, shelf, volume, page, highlightText = null) {
+            const content = generatePage(hexagon, wall, shelf, volume, page);
+            const formattedContent = formatPageContent(content, highlightText);
+            const pageContentEl = document.getElementById('pageContent');
+            if (pageContentEl) {
+                pageContentEl.innerHTML = formattedContent;
+                pageContentEl.scrollTop = 0;
+            pageContentEl.classList.add('is-scrollable');
+            }
+            const pageHeader = document.querySelector('.page-header');
+            pageHeader.innerHTML = `
+                <h3>Page ${page} of Volume ${volume}</h3>
+                <div class="location-info">
+                    Hexagon: ${hexagon}<br>
+                    Wall: ${wall} | Shelf: ${shelf} | Volume: ${volume} | Page: ${page}
+                </div>
+            `;
+            updateHeaderLocation(hexagon, wall, shelf, volume, page);
+            // Trigger animation
+            const pageDisplay = document.getElementById('pageDisplay');
+            pageDisplay.style.animation = 'none';
+            setTimeout(() => {
+                pageDisplay.style.animation = 'pageFlip 0.6s ease-out';
+            }, 10);
+            // Update navigation button states
+            updatePageNavButtons();
+        }
+        // Navigate to a specific location
+        function goToLocation() {
+            const hexagon = document.getElementById('hexagon').value.trim() || generateRandomHexagon();
+            const wall = parseInt(document.getElementById('wall').value) || 1;
+            const shelf = parseInt(document.getElementById('shelf').value) || 1;
+            const volume = parseInt(document.getElementById('volume').value) || 1;
+            const page = parseInt(document.getElementById('page').value) || 1;
+            if (wall < 1 || wall > 4 || shelf < 1 || shelf > 5 || 
+                volume < 1 || volume > 32 || page < 1 || page > 410) {
+                return;
+            }
+            document.getElementById('hexagon').value = hexagon;
+            displayPage(hexagon, wall, shelf, volume, page);
+            updateURL();
+        }
+        // Browse current location
+        function browsePage() {
+            const hexagon = document.getElementById('hexagon').value.trim();
+            const wall = parseInt(document.getElementById('wall').value);
+            const shelf = parseInt(document.getElementById('shelf').value);
+            const volume = parseInt(document.getElementById('volume').value);
+            let page = parseInt(document.getElementById('page').value);
+            // Increment page
+            page++;
+            if (page > PAGES_PER_VOLUME) {
+                page = 1;
+            }
+            document.getElementById('page').value = page;
+            goToLocation();
+        }
+        // Go to next page
+        function nextPage() {
+            let page = parseInt(document.getElementById('page').value);
+            if (page < PAGES_PER_VOLUME) {
+                page++;
+                document.getElementById('page').value = page;
+                goToLocation();
+            }
+        }
+        // Go to previous page
+        function previousPage() {
+            let page = parseInt(document.getElementById('page').value);
+            if (page > 1) {
+                page--;
+                document.getElementById('page').value = page;
+                goToLocation();
+            }
+        }
+        // Update navigation button states
+        function updatePageNavButtons() {
+            const page = parseInt(document.getElementById('page').value);
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            if (prevBtn) prevBtn.disabled = (page <= 1);
+            if (nextBtn) nextBtn.disabled = (page >= PAGES_PER_VOLUME);
+        }
+        // Generate random hexagon name
+        function generateRandomHexagon() {
+            const length = 12 + Math.floor(Math.random() * 8);
+            let hex = '';
+            const hexChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            for (let i = 0; i < length; i++) {
+                hex += hexChars[Math.floor(Math.random() * hexChars.length)];
+            }
+            return hex;
+        }
+        // Go to random page
+        function randomPage() {
+            const hexagon = generateRandomHexagon();
+            const wall = Math.floor(Math.random() * 4) + 1;
+            const shelf = Math.floor(Math.random() * 5) + 1;
+            const volume = Math.floor(Math.random() * 32) + 1;
+            const page = Math.floor(Math.random() * 410) + 1;
+            document.getElementById('hexagon').value = hexagon;
+            document.getElementById('wall').value = wall;
+            document.getElementById('shelf').value = shelf;
+            document.getElementById('volume').value = volume;
+            document.getElementById('page').value = page;
+            displayPage(hexagon, wall, shelf, volume, page);
+            updateURL();
+        }
+        // English word list for random words mode
+        let ENGLISH_WORDS = [];
+
+        // Load English words from file
+        async function loadEnglishWords() {
+            try {
+                const response = await fetch('words_alpha.txt');
+                const text = await response.text();
+                ENGLISH_WORDS = text.trim().split('\n').filter(word => word.length > 0);
+                console.log(`Loaded ${ENGLISH_WORDS.length} English words`);
+            } catch (error) {
+                console.error('Failed to load English words:', error);
+                // Fallback to a small set of common words
+                ENGLISH_WORDS = ['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'has', 'let', 'put', 'say', 'she', 'too', 'use'];
+            }
+        }
+        // Global search state
+        let currentSearchText = '';
+        let currentSearchMode = 'exact';
+        let displayedResultsCount = 0;
+        let searchSessionId = 0;  // Changes each time you click search
+        const RESULTS_PER_PAGE = 10;
+        // Search for text in the library
+        function searchLibrary() {
+            const searchText = document.getElementById('searchText').value.trim();
+            const searchMode = document.querySelector('input[name="searchMode"]:checked').value;
+            if (!searchText) {
+                return;
+            }
+            if (searchText.length > CHARS_PER_PAGE) {
+                return;
+            }
+            // Validate characters
+            const lowerSearch = searchText.toLowerCase();
+            for (let char of lowerSearch) {
+                if (!CHARSET.includes(char)) {
+                    return;
+                }
+            }
+            currentSearchText = lowerSearch;
+            currentSearchMode = searchMode;
+            displayedResultsCount = 0;
+            // Use a deterministic seed based on the search text and mode
+            // This ensures the same search always produces the same results
+            searchSessionId = hashString(lowerSearch + searchMode);
+            // Update URL
+            updateURL();
+            // Clear and display initial results
+            document.getElementById('searchResults').innerHTML = '';
+            displaySearchResults();
+        }
+        // Perform search based on mode - now generates on demand
+        function generateSearchResult(index) {
+            let fullText;
+            // Use session ID + index for unique seed per search
+            const seed = searchSessionId + index;
+            switch(currentSearchMode) {
+                case 'exact':
+                    fullText = generateWithRandomChars(currentSearchText, seed, true);
+                    break;
+                case 'random':
+                    fullText = generateWithRandomChars(currentSearchText, seed);
+                    break;
+                case 'english':
+                    fullText = generateWithEnglishWords(currentSearchText, seed);
+                    break;
+                case 'title':
+                    fullText = generateAsTitle(currentSearchText, seed);
+                    break;
+            }
+            const result = findTextInLibrary(fullText, seed);
+            if (result) {
+                result.displayText = fullText;
+                result.originalSearch = currentSearchText;
+                result.resultIndex = index;
+                result.seed = seed; // Store the seed for URL sharing
+            }
+            return result;
+        }
+        // Generate text with random characters filling the rest
+        function generateWithRandomChars(searchText, seed, exactMode = false) {
+            const random = createSeededRandom(hashString(String(seed) + searchText));
+            // Calculate max position to ensure text fits
+            const maxPosition = CHARS_PER_PAGE - searchText.length;
+            // Randomize position anywhere in the page
+            const position = Math.max(0, Math.floor(random() * (maxPosition + 1)));
+            if (exactMode) {
+                const prefixSpaces = ' '.repeat(position);
+                const suffixSpaces = ' '.repeat(Math.max(0, CHARS_PER_PAGE - position - searchText.length));
+                const pageContent = (prefixSpaces + searchText + suffixSpaces).slice(0, CHARS_PER_PAGE);
+                const trimmedContent = pageContent.trim();
+                return trimmedContent.length === searchText.length ? pageContent : searchText.padEnd(CHARS_PER_PAGE, ' ');
+            }
+            let result = '';
+            let searchTextInserted = false;
+            for (let i = 0; i < CHARS_PER_PAGE; i++) {
+                if (i === position && !searchTextInserted) {
+                    result += searchText;
+                    searchTextInserted = true;
+                    i += searchText.length - 1;
+                } else if (i >= position && i < position + searchText.length && !searchTextInserted) {
+                    // Skip these positions
+                    continue;
+                } else {
+                    const charIndex = Math.floor(random() * CHARSET.length);
+                    result += CHARSET[charIndex];
+                }
+            }
+            // Ensure we have exactly CHARS_PER_PAGE characters
+            if (result.length < CHARS_PER_PAGE) {
+                const remaining = CHARS_PER_PAGE - result.length;
+                for (let i = 0; i < remaining; i++) {
+                    const charIndex = Math.floor(random() * CHARSET.length);
+                    result += CHARSET[charIndex];
+                }
+            }
+            return result.substring(0, CHARS_PER_PAGE);
+        }
+        // Generate text with English words filling the rest
+        function generateWithEnglishWords(searchText, seed) {
+            const random = createSeededRandom(hashString(String(seed) + searchText + 'english'));
+            // Determine position for search text (by character count)
+            const targetPosition = Math.floor(random() * (CHARS_PER_PAGE - searchText.length));
+            let result = '';
+            let searchTextInserted = false;
+            // Build text with English words
+            while (result.length < CHARS_PER_PAGE) {
+                // Check if it's time to insert search text
+                if (!searchTextInserted && result.length >= targetPosition) {
+                    // Add search text
+                    if (result.length > 0 && !result.endsWith(' ')) {
+                        result += ' ';
+                    }
+                    result += searchText;
+                    searchTextInserted = true;
+                    if (result.length < CHARS_PER_PAGE) {
+                        result += ' ';
+                    }
+                } else {
+                    // Add a random word
+                    const word = ENGLISH_WORDS[Math.floor(random() * ENGLISH_WORDS.length)];
+                    if (result.length + word.length + 1 <= CHARS_PER_PAGE) {
+                        if (result.length > 0) result += ' ';
+                        result += word;
+                    } else {
+                        // Fill remaining with spaces
+                        result += ' '.repeat(CHARS_PER_PAGE - result.length);
+                    }
+                }
+            }
+            // Make sure search text was inserted
+            if (!searchTextInserted) {
+                result = searchText + ' ' + result.substring(searchText.length + 1);
+            }
+            return result.substring(0, CHARS_PER_PAGE);
+        }
+        // Generate as title (first line of page)
+        function generateAsTitle(searchText, seed) {
+            const random = createSeededRandom(hashString(String(seed) + searchText + 'title'));
+            const charsPerLine = 80;
+            // Pad title to fill first line
+            let title = searchText;
+            while (title.length < charsPerLine) {
+                title += ' ';
+            }
+            title = title.substring(0, charsPerLine);
+            // Fill rest of page with random characters
+            let result = title;
+            for (let i = charsPerLine; i < CHARS_PER_PAGE; i++) {
+                const charIndex = Math.floor(random() * CHARSET.length);
+                result += CHARSET[charIndex];
+            }
+            return result;
+        }
+        // Display search results - generates on demand
+        function displaySearchResults() {
+            if (!currentSearchText) return;
+            const container = document.getElementById('searchResults');
+            if (displayedResultsCount === 0) {
+                container.innerHTML = '<div class="search-results-container" id="resultsContainer"></div>';
+            }
+            const resultsContainer = document.getElementById('resultsContainer');
+            const endIndex = displayedResultsCount + RESULTS_PER_PAGE;
+            // Generate results on-the-fly
+            for (let i = displayedResultsCount; i < endIndex; i++) {
+                const result = generateSearchResult(i);
+                if (!result) continue;
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item';
+                resultDiv.onclick = () => goToResult(result);
+                const preview = result.displayText.substring(0, 60) + '...';
+                resultDiv.innerHTML = `
+                    <div class="result-number">Result ${i + 1}</div>
+                    <div class="result-location">
+                        Hexagon: ${result.hexagon}<br>
+                        Wall: ${result.wall} | Shelf: ${result.shelf} | Volume: ${result.volume} | Page: ${result.page}
+                    </div>
+                    <div class="result-preview">${preview}</div>
+                `;
+                resultsContainer.appendChild(resultDiv);
+            }
+            displayedResultsCount = endIndex;
+            // Add "Load More" button - always show it
+            const existingBtn = document.getElementById('loadMoreBtn');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.id = 'loadMoreBtn';
+            loadMoreBtn.className = 'load-more-btn';
+            loadMoreBtn.textContent = 'Load More Results';
+            loadMoreBtn.onclick = displaySearchResults;
+            container.appendChild(loadMoreBtn);
+        }
+        // Go to a specific search result
+        function goToResult(result) {
+            document.getElementById('hexagon').value = result.hexagon;
+            document.getElementById('wall').value = result.wall;
+            document.getElementById('shelf').value = result.shelf;
+            document.getElementById('volume').value = result.volume;
+            document.getElementById('page').value = result.page;
+            // Store the seed so it can be included in the URL
+            currentResultSeed = result.seed;
+            displayPage(result.hexagon, result.wall, result.shelf, result.volume, result.page, result.originalSearch);
+            updateURL();
+        }
+        // Global variable to store the current result seed for URL sharing
+        let currentResultSeed = null;
+        function formatHeaderLocation(hexagon, wall, shelf, volume, page) {
+            const segments = [
+                hexagon ? `Hex ${hexagon}` : null,
+                wall ? `Wall ${wall}` : null,
+                shelf ? `Shelf ${shelf}` : null,
+                volume ? `Vol ${volume}` : null,
+                page ? `Page ${page}` : null
+            ].filter(Boolean);
+            return segments.join(' • ');
+        }
+        function updateHeaderLocation(hexagon, wall, shelf, volume, page) {
+            const headerLocationEl = document.getElementById('headerLocation');
+            if (!headerLocationEl) return;
+            headerLocationEl.textContent = formatHeaderLocation(hexagon, wall, shelf, volume, page);
+        }
+        // URL Parameter Handling
+        function updateURL() {
+            const params = new URLSearchParams();
+            const hexagon = document.getElementById('hexagon').value.trim();
+            const wall = document.getElementById('wall').value;
+            const shelf = document.getElementById('shelf').value;
+            const volume = document.getElementById('volume').value;
+            const page = document.getElementById('page').value;
+            if (hexagon) params.set('hex', hexagon);
+            if (wall) params.set('wall', wall);
+            if (shelf) params.set('shelf', shelf);
+            if (volume) params.set('vol', volume);
+            if (page) params.set('page', page);
+            if (currentSearchText) {
+                params.set('search', currentSearchText);
+                params.set('mode', currentSearchMode);
+                // Include the seed if we have one so the exact page can be recreated
+                if (currentResultSeed !== null) {
+                    params.set('seed', currentResultSeed);
+                }
+            }
+            const newURL = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newURL);
+        }
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const hexagon = params.get('hex');
+            const wall = params.get('wall');
+            const shelf = params.get('shelf');
+            const volume = params.get('vol');
+            const page = params.get('page');
+            const search = params.get('search');
+            const mode = params.get('mode');
+            const urlSeed = params.get('seed');
+            if (hexagon) document.getElementById('hexagon').value = hexagon;
+            if (wall) document.getElementById('wall').value = wall;
+            if (shelf) document.getElementById('shelf').value = shelf;
+            if (volume) document.getElementById('volume').value = volume;
+            if (page) document.getElementById('page').value = page;
+            let highlightText = null;
+            if (search) {
+                document.getElementById('searchText').value = search;
+                currentSearchText = search.toLowerCase();
+                currentSearchMode = mode || 'exact';
+                highlightText = search.toLowerCase();
+                // Set the search mode radio button
+                const modeRadio = document.querySelector(`input[name="searchMode"][value="${currentSearchMode}"]`);
+                if (modeRadio) modeRadio.checked = true;
+                // Use a deterministic seed based on the search text and mode
+                searchSessionId = hashString(currentSearchText + currentSearchMode);
+                // Display search results
+                displaySearchResults();
+            }
+            // Load the page if coordinates are present
+            if (hexagon && wall && shelf && volume && page) {
+                const h = hexagon;
+                const w = parseInt(wall);
+                const s = parseInt(shelf);
+                const v = parseInt(volume);
+                const p = parseInt(page);
+                // If there's a search term, we need to reconstruct the page content
+                // that would have been generated for this search result
+                if (search && mode) {
+                    // Reconstruct the page content based on the search mode
+                    let pageContent;
+                    const searchLower = search.toLowerCase();
+                    // Use the seed from URL if available, otherwise derive one
+                    const seed = urlSeed ? parseFloat(urlSeed) : hashString(h + ':' + w + ':' + s + ':' + v + ':' + p);
+                    // Store the seed for future URL updates
+                    currentResultSeed = seed;
+                    switch(mode) {
+                        case 'exact':
+                            pageContent = generateWithRandomChars(searchLower, seed, true);
+                            break;
+                        case 'random':
+                            pageContent = generateWithRandomChars(searchLower, seed);
+                            break;
+                        case 'english':
+                            pageContent = generateWithEnglishWords(searchLower, seed);
+                            break;
+                        case 'title':
+                            pageContent = generateAsTitle(searchLower, seed);
+                            break;
+                        default:
+                            pageContent = generateWithRandomChars(searchLower, seed);
+                    }
+                    // Store this custom page so it can be retrieved
+                    storeCustomPage(h, w, s, v, p, pageContent);
+                }
+                // Apply highlighting if there's a search term
+                displayPage(h, w, s, v, p, highlightText);
+            } else if (hexagon || wall || shelf || volume || page) {
+                // Partial coordinates, fill in defaults
+                const h = document.getElementById('hexagon').value || generateRandomHexagon();
+                const w = parseInt(document.getElementById('wall').value) || 1;
+                const s = parseInt(document.getElementById('shelf').value) || 1;
+                const v = parseInt(document.getElementById('volume').value) || 1;
+                const p = parseInt(document.getElementById('page').value) || 1;
+                document.getElementById('hexagon').value = h;
+                displayPage(h, w, s, v, p, highlightText);
+            }
+            updateHeaderLocation(
+                document.getElementById('hexagon').value.trim(),
+                document.getElementById('wall').value,
+                document.getElementById('shelf').value,
+                document.getElementById('volume').value,
+                document.getElementById('page').value
+            );
+        }
+        // Find text location using deterministic algorithm
+        function findTextInLibrary(fullPageContent, seed = 0) {
+            // Create a hexagon name from the full content and seed
+            const hexagon = hashString(fullPageContent + seed).toString(36);
+            // Use content to determine other coordinates
+            const searchHash = hashString(fullPageContent + seed);
+            const wall = (searchHash % 4) + 1;
+            const shelf = ((searchHash >> 2) % 5) + 1;
+            const volume = ((searchHash >> 4) % 32) + 1;
+            const page = ((searchHash >> 8) % PAGES_PER_VOLUME) + 1;
+            // Store the custom page content (fullPageContent is the complete 3200 char page)
+            storeCustomPage(hexagon, wall, shelf, volume, page, fullPageContent);
+            return {
+                hexagon,
+                wall,
+                shelf,
+                volume,
+                page
+            };
+        }
+        // Create starfield
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 200;
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                starsContainer.appendChild(star);
+            }
+        }
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Only handle arrow keys when not focused on an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousPage();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextPage();
+            }
+        });
+        // Initialize
+        createStars();
+        // Load English words
+        loadEnglishWords();
+        // Load from URL parameters or set defaults
+        loadFromURL();
+        // Set default hexagon if not loaded from URL
+        if (!document.getElementById('hexagon').value) {
+            document.getElementById('hexagon').value = generateRandomHexagon();
+        }
+        updateHeaderLocation(
+            document.getElementById('hexagon').value.trim(),
+            document.getElementById('wall').value,
+            document.getElementById('shelf').value,
+            document.getElementById('volume').value,
+            document.getElementById('page').value
+        );
+    </script>
+</body>
+</html>
