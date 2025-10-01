@@ -16,7 +16,9 @@ The library contains every book that has ever been written, every book that coul
 
 ## Usage
 
-Just open index.html in a web browser. No server required - it's all client-side JavaScript.
+Try it live at: https://thecommallama.github.io/libraryofbabel/
+
+Or run locally: just open index.html in a web browser. No server required - it's all client-side JavaScript.
 
 ## Tech
 
